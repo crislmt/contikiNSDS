@@ -412,7 +412,6 @@ publish(void)
 
   len = snprintf(buf_ptr, remaining,
                  "{"
-                 "\"d\":{"
                  "\"myName\":\"%s\","
                  "\"year\":%d,"
                  "\"day\":%d,"
