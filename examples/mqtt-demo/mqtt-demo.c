@@ -407,8 +407,8 @@ publish(void)
 
   /*** Generating random temperature and humidity value***/
   srand(time(NULL));
-  int temp=rand()%(MAX_TEMP-MIN_TEMP+1)+MIN_TEMP;
-  int humidity=rand()%(MAX_HUM-MIN_HUM+1)+MIN_HUM;
+  int temp=(int) rand()%(MAX_TEMP-MIN_TEMP+1)+MIN_TEMP;
+  int humidity=(int) rand()%(MAX_HUM-MIN_HUM+1)+MIN_HUM;
 
   len = snprintf(buf_ptr, remaining,
                  "{"
@@ -418,7 +418,7 @@ publish(void)
                  "\"day\":%d,"
                  "\"month\":%d,"
                  "\"Uptime (sec)\":%lu,"
-                 "\"temp\":%d",
+                 "\"temp\":%d,"
                  "\"hum\":%d",
                  "native", year, day, month, clock_seconds(),temp, humidity); 
 
