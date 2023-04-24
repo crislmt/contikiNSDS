@@ -419,7 +419,7 @@ publish(void)
                  "\"month\":%d,"
                  "\"Uptime (sec)\":%lu,"
                  "\"temp\":%d",
-                 "\"hum\":%d"
+                 "\"hum\":%d",
                  "native", year, day, month, clock_seconds(),temp, humidity); 
 
   if(len < 0 || len >= remaining) {
