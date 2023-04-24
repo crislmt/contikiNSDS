@@ -46,6 +46,7 @@
 #include "sys/etimer.h"
 #include "sys/ctimer.h"
 #include "leds.h"
+#include "time.h"
 
 #include "sys/log.h"
 #define LOG_MODULE "MQTT-DEMO"
@@ -389,14 +390,23 @@ publish(void)
 
   buf_ptr = app_buffer;
 
+  /***Getting to time to be inserted into each message***/
+  time_t current_time=time(NULL);
+  struct tm *date=localtime(&current_time);
+  int month=date->tm_mon+1;
+  int day=date->tm_mday;
+  int year=date->tm_year+1900;
+
   len = snprintf(buf_ptr, remaining,
                  "{"
                  "\"d\":{"
                  "\"myName\":\"%s\","
-                 "\"Seq #\":%d,"
+                 "\"year\":%d,"
+                 "\"day\":%d,"
+                 "\"month\":%d,"
                  "\"Uptime (sec)\":%lu,"
-                 "\"Temp (C)\":%d",
-                 "native", seq_nr_value,clock_seconds(),get_onboard_temp()); 
+                 "\"temp\":%d",
+                 "native", year, day, month, clock_seconds(),get_onboard_temp()); 
 
   if(len < 0 || len >= remaining) {
     LOG_ERR("Buffer too short. Have %d, need %d + \\0\n", remaining, len);
