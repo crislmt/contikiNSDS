@@ -47,12 +47,19 @@
 #include "sys/ctimer.h"
 #include "leds.h"
 #include "time.h"
-
+#include <string.h>
 #include "sys/log.h"
 #define LOG_MODULE "MQTT-DEMO"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
-#include <string.h>
+/*
+* Min and max value for temperature and humidity
+*/
+#define MIN_TEMP 0
+#define MAX_TEMP 40
+#define MIN_HUM 0
+#define MAX_HUM 100
+
 /*---------------------------------------------------------------------------*/
 /*
  * Publish to a local MQTT broker (e.g. mosquitto) running on
@@ -397,6 +404,11 @@ publish(void)
   int day=date->tm_mday;
   int year=date->tm_year+1900;
 
+  /*** Generating random temperature and humidity value***/
+  srand(time(NULL));
+  int temp=rand()%(MAX_TEMP-MIN_TEMP+1)+MIN_TEMP;
+  int humidity=rand()%(MAX_HUM-MIN_HUM+1)+MIN_HUM;
+
   len = snprintf(buf_ptr, remaining,
                  "{"
                  "\"d\":{"
@@ -406,7 +418,8 @@ publish(void)
                  "\"month\":%d,"
                  "\"Uptime (sec)\":%lu,"
                  "\"temp\":%d",
-                 "native", year, day, month, clock_seconds(),get_onboard_temp()); 
+                 "\"hum\":%d"
+                 "native", year, day, month, clock_seconds(),temp, humidity); 
 
   if(len < 0 || len >= remaining) {
     LOG_ERR("Buffer too short. Have %d, need %d + \\0\n", remaining, len);
