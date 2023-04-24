@@ -380,11 +380,12 @@ subscribe(void)
   }
 }
 /*---------------------------------------------------------------------------*/
-static int
+/*static int
 get_onboard_temp(void)
 {
   return NATIVE_TEMPERATURE;
 }
+*/
 /*---------------------------------------------------------------------------*/
 static void
 publish(void)
