@@ -59,6 +59,8 @@
 #define MAX_TEMP 40
 #define MIN_HUM 0
 #define MAX_HUM 100
+#define THRESHOLD 25
+#define MAX_QUEUE_SIZE 6
 
 /*---------------------------------------------------------------------------*/
 /*
@@ -171,7 +173,56 @@ static uint16_t seq_nr_value = 0;
 static mqtt_client_config_t conf;
 /*---------------------------------------------------------------------------*/
 PROCESS(mqtt_demo_process, "MQTT Demo");
-/*---------------------------------------------------------------------------*/
+/*-----------------------------------QUEUE-----------------------------------*/
+static q[MAX_QUEUE_SIZE];
+static int front;
+static int rear;
+static int size;
+static int initialized=0;
+
+void createQueue() {
+    front = -1;
+    rear = -1;
+    size = 0;
+    initialized=1;
+    for(int i=0; i<MAX_QUEUE_SIZE; i++){
+      q[i]=1;
+    }
+}
+
+void enqueue(int value) {
+    if (rear == MAX_QUEUE_SIZE - 1) {
+        printf("La coda è piena.\n");
+    } else {
+        if (front == -1) {
+            front = 0;
+        }
+        rear++;
+        q[rear] = value;
+        size++;
+    }
+}
+
+int dequeue() {
+    if (front == -1 || front > rear) {
+        printf("La coda è vuota.\n");
+        return -1;
+    } else {
+        int value = q[front];
+        front++;
+        size--;
+        return value;
+    }
+}
+
+double calculateQueueAverage() {
+    int sum = 0;
+    for (int i = 0; i < q->size; i++) {
+        sum += q[front + i];
+    }
+    return (double)sum / size;
+}
+/*--------------------------------------------------------------------------------*/
 int
 ipaddr_sprintf(char *buf, uint8_t buf_len, const uip_ipaddr_t *addr)
 {
@@ -372,8 +423,7 @@ subscribe(void)
 {
   mqtt_status_t status;
 
-  status = mqtt_subscribe(&conn, NULL, sub_topic, MQTT_QOS_LEVEL_0);
-
+  status = mqtt_subscribe(&conn, NULL, sub_topic, MQTT_QOS_LEVEL_0); 
   LOG_INFO("Subscribing\n");
   if(status == MQTT_STATUS_OUT_QUEUE_FULL) {
     LOG_INFO("Tried to subscribe but command queue was full!\n");
@@ -409,6 +459,9 @@ publish(void)
   srand(time(NULL));
   int temp=(int) rand()%(MAX_TEMP-MIN_TEMP+1)+MIN_TEMP;
   int humidity=(int) rand()%(MAX_HUM-MIN_HUM+1)+MIN_HUM;
+  enqueue(temp);
+  dequeue();
+  if(temp<THRESHOLD) temp=calculateQueueAverage();
 
   len = snprintf(buf_ptr, remaining,
                  "{"
@@ -591,8 +644,12 @@ state_machine(void)
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(mqtt_demo_process, ev, data)
 {
+  if(initialized==0){
+    initialize();
+  }
 
   PROCESS_BEGIN();
+
 
   LOG_INFO("MQTT Demo Process\n");
 
@@ -617,3 +674,5 @@ PROCESS_THREAD(mqtt_demo_process, ev, data)
  * @}
  * @}
  */
+
+
