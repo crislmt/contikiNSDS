@@ -55,11 +55,10 @@
 /*
 * Min and max value for temperature and humidity
 */
-#define MIN_TEMP 0
-#define MAX_TEMP 40
+
 #define MIN_HUM 0
 #define MAX_HUM 100
-#define THRESHOLD 15
+#define THRESHOLD 50
 #define MAX_QUEUE_SIZE 6
 
 /*---------------------------------------------------------------------------*/
@@ -325,7 +324,7 @@ mqtt_event(struct mqtt_connection *m, mqtt_event_t event, void *data)
 static int
 construct_pub_topic(void)
 {
-  int len = snprintf(pub_topic, BUFFER_SIZE, MQTT_DEMO_PUBLISH_TOPIC);
+  int len = snprintf(pub_topic, BUFFER_SIZE, MQTT_HUMIDITY_TOPIC);
 
   /* len < 0: Error. Len >= BUFFER_SIZE: Buffer too small */
   if(len < 0 || len >= BUFFER_SIZE) {
@@ -339,7 +338,7 @@ construct_pub_topic(void)
 static int
 construct_sub_topic(void)
 {
-  int len = snprintf(sub_topic, BUFFER_SIZE, MQTT_DEMO_SUB_TOPIC);
+  int len = snprintf(sub_topic, BUFFER_SIZE, MQTT_HUMIDITY_TOPIC);
 
   /* len < 0: Error. Len >= BUFFER_SIZE: Buffer too small */
   if(len < 0 || len >= BUFFER_SIZE) {
@@ -462,11 +461,10 @@ publish(void)
 
   /*** Generating random temperature and humidity value***/
   srand(time(NULL));
-  int temp=(int) rand()%(MAX_TEMP-MIN_TEMP+1)+MIN_TEMP;
   int humidity=(int) rand()%(MAX_HUM-MIN_HUM+1)+MIN_HUM;
-  enqueue(temp);
   dequeue();
-  if(temp<THRESHOLD) temp=calculateQueueAverage();
+  enqueue(humidity);
+  if(humidity<THRESHOLD) humidity=calculateQueueAverage();
 
   len = snprintf(buf_ptr, remaining,
                  "{"
@@ -475,9 +473,8 @@ publish(void)
                  "\"day\":%d,"
                  "\"month\":%d,"
                  "\"Uptime (sec)\":%lu,"
-                 "\"temp\":%d,"
                  "\"hum\":%d",
-                 "native", year, day, month, clock_seconds(),temp, humidity); 
+                 "HUMIDITY", year, day, month, clock_seconds(), humidity); 
 
   if(len < 0 || len >= remaining) {
     LOG_ERR("Buffer too short. Have %d, need %d + \\0\n", remaining, len);
