@@ -207,7 +207,7 @@ void dequeue() {
 
 double calculateQueueAverage() {
     int sum=0;
-    if(isFull){
+    if(isFull()){
       for(int i=0; i<MAX_QUEUE_SIZE; i++){
         sum+=q[i];
       }
