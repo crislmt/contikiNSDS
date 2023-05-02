@@ -214,7 +214,7 @@ double calculateQueueAverage() {
       }
     }
     else{
-      for (int i = front; i < rear; i++) {
+      for (int i = front; i <= rear; i++) {
         sum += q[i];
       }
     }
