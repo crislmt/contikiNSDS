@@ -1,4 +1,4 @@
-all: mqtt-hum
+all: mqtt-demo
 
 
 MODULES += os/net/app-layer/mqtt
