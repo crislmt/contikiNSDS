@@ -459,26 +459,28 @@ publish(void)
   srand(time(NULL));
   int temp=(int) rand()%(MAX_TEMP-MIN_TEMP+1)+MIN_TEMP;
   int humidity=(int) rand()%(MAX_HUM-MIN_HUM+1)+MIN_HUM;
-  int measureType=0;
+  int temp_measure_type=0;
+  int hum_measure_type=0;
   dequeue(&temp_buffer); dequeue(&hum_buffer);
   enqueue(&temp_buffer, temp); enqueue(&hum_buffer, humidity);
   if(temp<TEMP_THRESHOLD) {
     temp=calculateQueueAverage(&temp_buffer);
-    measureType=1;
+    temp_measure_type=1;
   }
-  if(humidity<HUM_THRESHOLD){temp=calculateQueueAverage(&temp_buffer); measureType=1;}
+  if(humidity<HUM_THRESHOLD){temp=calculateQueueAverage(&temp_buffer); temp_measure_type=1;}
 
   len = snprintf(buf_ptr, remaining,
                  "{"
                  "\"myName\":\"%s\","
-                 "\"type\":\"%s\","
+                 "\"temp_type\":\"%s\","
+                 "\"hum_type\":\"%s\","
                  "\"year\":%d,"
                  "\"day\":%d,"
                  "\"month\":%d,"
                  "\"Uptime (sec)\":%lu,"
                  "\"temp\":%d,"
                  "\"hum\":%d",
-                 "native", measureType ? "A" : "R", year, day, month, clock_seconds(),temp, humidity); 
+                 "native", temp_measure_type ? "A" : "R",hum_measure_type ? "A" : "R", year, day, month, clock_seconds(),temp, humidity); 
 
   if(len < 0 || len >= remaining) {
     LOG_ERR("Buffer too short. Have %d, need %d + \\0\n", remaining, len);
