@@ -178,7 +178,6 @@ PROCESS(mqtt_demo_process, "MQTT Demo");
 static int q[MAX_QUEUE_SIZE];
 static int front;
 static int rear;
-static int size;
 static int initialized=0;
 static int itemCount=0;
 
