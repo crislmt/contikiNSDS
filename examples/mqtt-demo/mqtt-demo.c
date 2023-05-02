@@ -204,7 +204,7 @@ void enqueue(int value) {
    }
 }
 
-int dequeue() {
+void dequeue() {
     if(front==MAX_QUEUE_SIZE){
       front=0;
     }
@@ -219,9 +219,8 @@ double calculateQueueAverage() {
     return (double)sum / MAX_QUEUE_SIZE;
 }
 
-int isEmpty(){
-  if(itemCount==0) return 1;
-  return 0;
+int isFull(){
+  return itemCount == MAX_QUEUE_SIZE;
 }
 
 /*--------------------------------------------------------------------------------*/
