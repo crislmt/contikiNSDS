@@ -471,16 +471,14 @@ publish(void)
 
   len = snprintf(buf_ptr, remaining,
                  "{"
-                 "\"myName\":\"%s\","
                  "\"temp_type\":\"%s\","
                  "\"hum_type\":\"%s\","
                  "\"year\":%d,"
                  "\"day\":%d,"
                  "\"month\":%d,"
-                 "\"Uptime (sec)\":%lu,"
                  "\"temp\":%d,"
                  "\"hum\":%d",
-                 "native", temp_measure_type ? "A" : "R",hum_measure_type ? "A" : "R", year, day, month, clock_seconds(),temp, humidity); 
+                 temp_measure_type ? "A" : "R", hum_measure_type ? "A" : "R", year, day, month ,temp, humidity); 
 
   if(len < 0 || len >= remaining) {
     LOG_ERR("Buffer too short. Have %d, need %d + \\0\n", remaining, len);
