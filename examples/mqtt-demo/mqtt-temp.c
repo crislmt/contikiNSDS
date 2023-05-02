@@ -189,7 +189,7 @@ int isFull(buffer* buffer){
   return buffer->itemCount == MAX_QUEUE_SIZE;
 }
 
-void enqueue(int value, buffer* buff) {
+void enqueue(buffer* buff, int value) {
    if(!isFull(buff)){
     if(buff->rear==MAX_QUEUE_SIZE-1){
       buff->rear=-1;
