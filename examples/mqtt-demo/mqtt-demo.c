@@ -174,11 +174,13 @@ static mqtt_client_config_t conf;
 /*---------------------------------------------------------------------------*/
 PROCESS(mqtt_demo_process, "MQTT Demo");
 /*-----------------------------------QUEUE-----------------------------------*/
+
 static int q[MAX_QUEUE_SIZE];
 static int front;
 static int rear;
 static int size;
 static int initialized=0;
+static int itemCount;
 
 void initialize() {
     front = -1;
@@ -186,42 +188,43 @@ void initialize() {
     size = 0;
     initialized=1;
     for(int i=0; i<MAX_QUEUE_SIZE; i++){
-      q[i]=1;
+      enqueue(1);
     }
 }
 
+/*Function that inserts elements in the array q as if it was a queue*/
+
 void enqueue(int value) {
-    if (rear == MAX_QUEUE_SIZE - 1) {
-        printf("La coda è piena.\n");
-    } else {
-        if (front == -1) {
-            front = 0;
-        }
-        rear++;
-        q[rear] = value;
-        size++;
+   if(!isFull()){
+    if(rear==MAX_QUEUE_SIZE-1){
+      rear=-1;
     }
+    q[++rear]=value;
+    itemCount++;
+   }
 }
 
 int dequeue() {
-    if (front == -1 || front > rear) {
-        printf("La coda è vuota.\n");
-        return -1;
-    } else {
-        int value = q[front];
-        front++;
-        size--;
-        return value;
+    int value= q[front++];
+    if(front==MAX_QUEUE_SIZE){
+      front=0;
     }
+    itemCount--;
 }
 
 double calculateQueueAverage() {
     int sum = 0;
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < MAX_QUEUE_SIZE; i++) {
         sum += q[i];
     }
-    return (double)sum / size;
+    return (double)sum / MAX_QUEUE_SIZE;
 }
+
+int isEmpty(){
+  if(itemCount==0) return 1;
+  return 0;
+}
+
 /*--------------------------------------------------------------------------------*/
 int
 ipaddr_sprintf(char *buf, uint8_t buf_len, const uip_ipaddr_t *addr)
