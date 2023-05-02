@@ -461,7 +461,7 @@ publish(void)
   int temp=(int) rand()%(MAX_TEMP-MIN_TEMP+1)+MIN_TEMP;
   int humidity=(int) rand()%(MAX_HUM-MIN_HUM+1)+MIN_HUM;
   dequeue(&temp_buffer); dequeue(&hum_buffer);
-  enqueue(&temp_buffer, temp); dequeue(&hum_buffer, humidity);
+  enqueue(&temp_buffer, temp); enqueue(&hum_buffer, humidity);
   if(temp<TEMP_THRESHOLD) temp=calculateQueueAverage(&temp_buffer);
   if(humidity<HUM_THRESHOLD) temp=calculateQueueAverage(&temp_buffer);
 
