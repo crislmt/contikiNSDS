@@ -338,7 +338,7 @@ construct_pub_topic(void)
 static int
 construct_sub_topic(void)
 {
-  int len = snprintf(sub_topic, BUFFER_SIZE, MQTT_HUMIDITY_TOPIC);
+  int len = snprintf(sub_topic, BUFFER_SIZE, "iot/contiki/humidity");
 
   /* len < 0: Error. Len >= BUFFER_SIZE: Buffer too small */
   if(len < 0 || len >= BUFFER_SIZE) {
