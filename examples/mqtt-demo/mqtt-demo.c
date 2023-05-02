@@ -198,6 +198,7 @@ void enqueue(int value) {
 }
 
 void dequeue() {
+  if(itemCount < MAX_QUEUE_SIZE) return;
   front++;
     if(front==MAX_QUEUE_SIZE){
       front=0;
