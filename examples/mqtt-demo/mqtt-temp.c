@@ -448,7 +448,7 @@ publish(void)
 
   buf_ptr = app_buffer;
 
-  /***Getting to time to be inserted into each message***/
+  /***Getting time to be inserted into each message***/
   time_t current_time=time(NULL);
   struct tm *date=localtime(&current_time);
   int month=date->tm_mon+1;
@@ -467,7 +467,7 @@ publish(void)
     temp=calculateQueueAverage(&temp_buffer);
     temp_measure_type=1;
   }
-  if(humidity<HUM_THRESHOLD){temp=calculateQueueAverage(&temp_buffer); temp_measure_type=1;}
+  if(humidity<HUM_THRESHOLD){humidity=calculateQueueAverage(&hum_buffer); hum_measure_type=1;}
 
   len = snprintf(buf_ptr, remaining,
                  "{"
@@ -511,7 +511,7 @@ publish(void)
   }
 
   mqtt_publish(&conn, NULL, pub_topic, (uint8_t *)app_buffer,
-               strlen(app_buffer), MQTT_QOS_LEVEL_0, MQTT_RETAIN_OFF);
+               strlen(app_buffer), MQTT_QOS_LEVEL_1, MQTT_RETAIN_OFF);
 
   LOG_INFO("Publish sent out!\n");
 }
