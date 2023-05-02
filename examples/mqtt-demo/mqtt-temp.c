@@ -181,7 +181,6 @@ typedef struct{
   int itemCount;
 } buffer;
 
-static int initialized;
 static buffer temp_buffer;
 static buffer hum_buffer;
 
