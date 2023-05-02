@@ -182,16 +182,6 @@ static int size;
 static int initialized=0;
 static int itemCount;
 
-void initialize() {
-    front = -1;
-    rear = -1;
-    size = 0;
-    initialized=1;
-    for(int i=0; i<MAX_QUEUE_SIZE; i++){
-      enqueue(1);
-    }
-}
-
 /*Function that inserts elements in the array q as if it was a queue*/
 
 void enqueue(int value) {
@@ -221,6 +211,17 @@ double calculateQueueAverage() {
 
 int isFull(){
   return itemCount == MAX_QUEUE_SIZE;
+}
+
+
+void initialize() {
+    front = 0;
+    rear = -1;
+    size = 0;
+    initialized=1;
+    for(int i=0; i<MAX_QUEUE_SIZE; i++){
+      enqueue(1);
+    }
 }
 
 /*--------------------------------------------------------------------------------*/
