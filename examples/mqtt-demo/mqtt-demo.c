@@ -205,7 +205,6 @@ void enqueue(int value) {
 }
 
 int dequeue() {
-    int value= q[front++];
     if(front==MAX_QUEUE_SIZE){
       front=0;
     }
