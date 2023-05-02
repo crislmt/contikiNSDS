@@ -180,7 +180,7 @@ static int front;
 static int rear;
 static int size;
 static int initialized=0;
-static int itemCount;
+static int itemCount=0;
 
 /*Function that inserts elements in the array q as if it was a queue*/
 
@@ -224,7 +224,6 @@ double calculateQueueAverage() {
 void initialize() {
     front = 0;
     rear = -1;
-    size = 0;
     initialized=1;
 }
 
