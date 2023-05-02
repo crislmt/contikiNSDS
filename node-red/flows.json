@@ -1,0 +1,964 @@
+[
+    {
+        "id": "1981b8ca6e21490c",
+        "type": "tab",
+        "label": "Flow 5",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "edd196532a214452",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "1f3f21208f8f83e8",
+        "type": "tab",
+        "label": "Flow 5",
+        "disabled": true,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "5b3ddf093fdf1ef4",
+        "type": "mqtt-broker",
+        "name": "contiki-MQTT",
+        "broker": "localhost",
+        "port": "1884",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "2e1d17f7a5baba18",
+        "type": "function",
+        "z": "1981b8ca6e21490c",
+        "name": "function 11",
+        "func": "let change_msg = null;\nlet new_msg = null;\n\nif (msg.payload.day == context.get(\"current_day\")) context.set(\"current_day_temp\", context.get(\"current_day_temp\") + msg.payload.day);\nif(msg.payload.day != context.get(\"current_day\")){\n    var avg = context.get(\"current_day_temp\")/10;\n    //should be 8640 not 10\n    if (avg > context.get(\"max_temp\") || avg < context.get(\"min_temp\")){\n        if (avg > context.get(\"max_temp\")) context.set(\"max_temp\", avg);\n        if (avg < context.get(\"min_temp\")) context.set(\"min_temp\", avg);\n        change_msg = {\n        topic: msg.topic,\n        payload:{\n            current_month: context.get(\"current_month\"),\n            current_year: context.get(\"current_year\"),\n            max_temp: context.get(\"max_temp\"),\n            min_temp: context.get(\"min_temp\")\n            \n        }\n        }\n\n    }\n    \n    context.set(\"current_day_temp\", msg.payload.temp);\n    context.set(\"current_day\", msg.payload.day);\n}\nif (msg.payload.month != context.get(\"current_month\")) {\n    new_msg = {\n        topic: msg.topic,\n        payload: \"max temp for \" + context.get(\"current_month\") + \"/\" + context.get(\"current_year\") + \"is\" + context.get(\"max_temp\") + \"C, the min is \" + context.get(\"min_temp\") + \"C.\"\n    }\n\n    context.set(\"current_day\", msg.payload.day);\n    context.set(\"current_month\", msg.payload.month);\n    context.set(\"current_year\", msg.payload.year);\n    context.set(\"max_temp\", 0);\n    context.set(\"min_temp\", 100);\n\n}\n\nreturn[new_msg, change_msg];\n\n\n\n\n\n\n",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set(\"current_day\", 1)\ncontext.set(\"current_month\", 1)\ncontext.set(\"current_year\", 2000)\ncontext.set(\"current_day_temp\", 0)\ncontext.set(\"max_temp\", 0)\ncontext.set(\"min_temp\", 100)",
+        "finalize": "",
+        "libs": [],
+        "x": 1070,
+        "y": 20,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "de3bb6399a844b1b",
+        "type": "json",
+        "z": "1981b8ca6e21490c",
+        "name": "temp",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 1210,
+        "y": 240,
+        "wires": [
+            [
+                "11fb448a416b86a1"
+            ]
+        ]
+    },
+    {
+        "id": "11fb448a416b86a1",
+        "type": "file",
+        "z": "1981b8ca6e21490c",
+        "name": "",
+        "filename": "C:\\Users\\Chris\\polimi\\NSDS\\NSDS_Contiki_Node\\files\\log.json",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 1390,
+        "y": 100,
+        "wires": [
+            [
+                "9194cf8ce47cb165"
+            ]
+        ]
+    },
+    {
+        "id": "9194cf8ce47cb165",
+        "type": "e-mail",
+        "z": "1981b8ca6e21490c",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "secure": true,
+        "tls": false,
+        "name": "koribe@telegmail.com",
+        "dname": "Send Mail!",
+        "x": 1710,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "3fc3890e1edcd4ec",
+        "type": "json",
+        "z": "1981b8ca6e21490c",
+        "name": "temp",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 550,
+        "y": 440,
+        "wires": [
+            [
+                "2c655a805c086843"
+            ]
+        ]
+    },
+    {
+        "id": "2c655a805c086843",
+        "type": "file",
+        "z": "1981b8ca6e21490c",
+        "name": "",
+        "filename": "C:\\Users\\Chris\\polimi\\NSDS\\NSDS_Contiki_Node\\files\\temp.json",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 800,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0fe0524dd0f96052",
+        "type": "file in",
+        "z": "1981b8ca6e21490c",
+        "name": "",
+        "filename": "C:\\Users\\Chris\\polimi\\NSDS\\NSDS_Contiki_Node\\files\\temp.json",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "utf8",
+        "allProps": false,
+        "x": 990,
+        "y": 420,
+        "wires": [
+            [
+                "ef84bc757a18250a"
+            ]
+        ]
+    },
+    {
+        "id": "0d6c6fff724e6e8c",
+        "type": "delay",
+        "z": "1981b8ca6e21490c",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 900,
+        "y": 140,
+        "wires": [
+            [
+                "0fe0524dd0f96052"
+            ]
+        ]
+    },
+    {
+        "id": "8f6cde138bfd0e37",
+        "type": "function",
+        "z": "1981b8ca6e21490c",
+        "name": "function 15",
+        "func": "if(msg!=null) return msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 300,
+        "wires": [
+            [
+                "3fc3890e1edcd4ec"
+            ]
+        ]
+    },
+    {
+        "id": "aa262158fa995dc3",
+        "type": "function",
+        "z": "1981b8ca6e21490c",
+        "name": "function 16",
+        "func": "let change_msg = null;\nlet new_msg = null;\n\nif(msg.topic!='temp' && context.get(\"current_year\")==null){\n    context.set(\"current_day\", msg.payload.current_day);\n    context.set(\"current_month\", msg.payload.current_month);\n    context.set(\"current_year\", msg.payload.current_year);\n    context.set(\"current_day_temp\", msg.payload.current_day_temp);\n    context.set(\"max_temp\", msg.payload.max_temp);\n    context.set(\"min_temp\", msg.payload.min_temp);\n}\nelse if(msg.topic==\"temp\" && context.get(\"current_year\")!=null){\n    if (msg.payload.day == context.get(\"current_day\")) context.set(\"current_day_temp\", context.get(\"current_day_temp\") + msg.payload.temp);\n    if (msg.payload.day != context.get(\"current_day\")) {\n        var avg = context.get(\"current_day_temp\") / 10;\n        //should be 8640 not 10\n        if (avg > context.get(\"max_temp\") || avg < context.get(\"min_temp\")) {\n            if (avg > context.get(\"max_temp\")) context.set(\"max_temp\", avg);\n            if (avg < context.get(\"min_temp\")) context.set(\"min_temp\", avg);\n            change_msg = {\n                topic: msg.topic,\n                payload: {\n                    current_month: context.get(\"current_month\"),\n                    current_year: context.get(\"current_year\"),\n                    current_day:context.get(\"current_day\"),\n                    max_temp: context.get(\"max_temp\"),\n                    min_temp: context.get(\"min_temp\")\n                }\n            }\n\n        }\n\n        context.set(\"current_day_temp\", msg.payload.temp);\n        context.set(\"current_day\", msg.payload.day);\n    }\n    if (msg.payload.month != context.get(\"current_month\")) {\n        new_msg = {\n            topic: msg.topic,\n            payload: 1\n        }\n\n        context.set(\"current_day\", msg.payload.day);\n        context.set(\"current_month\", msg.payload.month);\n        context.set(\"current_year\", msg.payload.year);\n        context.set(\"max_temp\", 0);\n        context.set(\"min_temp\", 100);\n\n    }\n\n    return [new_msg, change_msg];\n}\n\n",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set(\"current_day\", null)\ncontext.set(\"current_month\", null)\ncontext.set(\"current_year\", null)\ncontext.set(\"current_day_temp\", null)\ncontext.set(\"max_temp\", null)\ncontext.set(\"min_temp\", null)",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 160,
+        "wires": [
+            [
+                "f83b9d8c04319bd8",
+                "0b40279aa276616a"
+            ],
+            [
+                "8f6cde138bfd0e37",
+                "cb27e82910cc36e1"
+            ]
+        ]
+    },
+    {
+        "id": "e219ca2e41b5f11d",
+        "type": "function",
+        "z": "1981b8ca6e21490c",
+        "name": "function 17",
+        "func": "msg.payload = \"max temp for \" + msg.payload.current_month + \"/\" + msg.payload.current_year + \"is\" + msg.payload.max_temp + \"C, the min is \" + msg.payload.min_temp + \"C.\"\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1150,
+        "y": 300,
+        "wires": [
+            [
+                "de3bb6399a844b1b"
+            ]
+        ]
+    },
+    {
+        "id": "ef84bc757a18250a",
+        "type": "json",
+        "z": "1981b8ca6e21490c",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 1130,
+        "y": 340,
+        "wires": [
+            [
+                "e219ca2e41b5f11d"
+            ]
+        ]
+    },
+    {
+        "id": "9c39fbd013d7be25",
+        "type": "inject",
+        "z": "1981b8ca6e21490c",
+        "name": "prestart",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 680,
+        "wires": [
+            [
+                "38abba79ce2fca64"
+            ]
+        ]
+    },
+    {
+        "id": "38abba79ce2fca64",
+        "type": "function",
+        "z": "1981b8ca6e21490c",
+        "name": "function 18",
+        "func": "msg = {\n    payload: {\n    current_day: 1,\n    current_month: 1,\n    current_year: 2000,\n    current_day_temp: 1,\n    max_temp: 0,\n    min_temp: 100    \n    }\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 680,
+        "wires": [
+            [
+                "72dcda153a906741"
+            ]
+        ]
+    },
+    {
+        "id": "6d47c4b1d83f801d",
+        "type": "file",
+        "z": "1981b8ca6e21490c",
+        "name": "",
+        "filename": "C:\\Users\\Chris\\polimi\\NSDS\\NSDS_Contiki_Node\\files\\temp.json",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 820,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "72dcda153a906741",
+        "type": "json",
+        "z": "1981b8ca6e21490c",
+        "name": "temp",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 470,
+        "y": 680,
+        "wires": [
+            [
+                "6d47c4b1d83f801d"
+            ]
+        ]
+    },
+    {
+        "id": "f07f7f979ed446f8",
+        "type": "file in",
+        "z": "1981b8ca6e21490c",
+        "name": "",
+        "filename": "C:\\Users\\Chris\\polimi\\NSDS\\NSDS_Contiki_Node\\files\\temp.json",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "utf8",
+        "allProps": false,
+        "x": 320,
+        "y": 40,
+        "wires": [
+            [
+                "638a92414ea01335"
+            ]
+        ]
+    },
+    {
+        "id": "638a92414ea01335",
+        "type": "json",
+        "z": "1981b8ca6e21490c",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 350,
+        "y": 160,
+        "wires": [
+            [
+                "aa262158fa995dc3",
+                "f3756c9daccc905a"
+            ]
+        ]
+    },
+    {
+        "id": "f83b9d8c04319bd8",
+        "type": "function",
+        "z": "1981b8ca6e21490c",
+        "name": "function 19",
+        "func": "if(msg!=null) return msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 730,
+        "y": 140,
+        "wires": [
+            [
+                "0d6c6fff724e6e8c"
+            ]
+        ]
+    },
+    {
+        "id": "ac05d303b93f2f55",
+        "type": "mqtt in",
+        "z": "1981b8ca6e21490c",
+        "name": "contiki-MQTT",
+        "topic": "iot/native/launchpad/json",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "5b3ddf093fdf1ef4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 70,
+        "y": 280,
+        "wires": [
+            [
+                "ac20fb15ce6232f9",
+                "f07f7f979ed446f8"
+            ]
+        ]
+    },
+    {
+        "id": "0b40279aa276616a",
+        "type": "debug",
+        "z": "1981b8ca6e21490c",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "ac20fb15ce6232f9",
+        "type": "json",
+        "z": "1981b8ca6e21490c",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 150,
+        "y": 360,
+        "wires": [
+            [
+                "f29cd5b195399ccb"
+            ]
+        ]
+    },
+    {
+        "id": "cb27e82910cc36e1",
+        "type": "debug",
+        "z": "1981b8ca6e21490c",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "f29cd5b195399ccb",
+        "type": "function",
+        "z": "1981b8ca6e21490c",
+        "name": "function 20",
+        "func": "let new_msg={\n    topic: \"temp\",\n    payload: msg.payload\n}\nreturn new_msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 360,
+        "wires": [
+            [
+                "aa262158fa995dc3",
+                "5710100cbf4bffda"
+            ]
+        ]
+    },
+    {
+        "id": "5710100cbf4bffda",
+        "type": "debug",
+        "z": "1981b8ca6e21490c",
+        "name": "debug 3",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 340,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "f3756c9daccc905a",
+        "type": "debug",
+        "z": "1981b8ca6e21490c",
+        "name": "debug 4",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "dc23bdb66dff84c7",
+        "type": "inject",
+        "z": "1f3f21208f8f83e8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "time",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 240,
+        "wires": [
+            [
+                "78288e55b7bd3cfa",
+                "77233b387b9870bd"
+            ]
+        ]
+    },
+    {
+        "id": "1641a44b8e6f5d0b",
+        "type": "function",
+        "z": "1f3f21208f8f83e8",
+        "name": "function 11",
+        "func": "let change_msg = null;\nlet new_msg = null;\n\nif (msg.payload.day == context.get(\"current_day\")) context.set(\"current_day_temp\", context.get(\"current_day_temp\") + msg.payload.day);\nif(msg.payload.day != context.get(\"current_day\")){\n    var avg = context.get(\"current_day_temp\")/10;\n    //should be 8640 not 10\n    if (avg > context.get(\"max_temp\") || avg < context.get(\"min_temp\")){\n        if (avg > context.get(\"max_temp\")) context.set(\"max_temp\", avg);\n        if (avg < context.get(\"min_temp\")) context.set(\"min_temp\", avg);\n        change_msg = {\n        topic: msg.topic,\n        payload:{\n            current_month: context.get(\"current_month\"),\n            current_year: context.get(\"current_year\"),\n            max_temp: context.get(\"max_temp\"),\n            min_temp: context.get(\"min_temp\")\n            \n        }\n        }\n\n    }\n    \n    context.set(\"current_day_temp\", msg.payload.temp);\n    context.set(\"current_day\", msg.payload.day);\n}\nif (msg.payload.month != context.get(\"current_month\")) {\n    new_msg = {\n        topic: msg.topic,\n        payload: \"max temp for \" + context.get(\"current_month\") + \"/\" + context.get(\"current_year\") + \"is\" + context.get(\"max_temp\") + \"C, the min is \" + context.get(\"min_temp\") + \"C.\"\n    }\n\n    context.set(\"current_day\", msg.payload.day);\n    context.set(\"current_month\", msg.payload.month);\n    context.set(\"current_year\", msg.payload.year);\n    context.set(\"max_temp\", 0);\n    context.set(\"min_temp\", 100);\n\n}\n\nreturn[new_msg, change_msg];\n\n\n\n\n\n\n",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set(\"current_day\", 1)\ncontext.set(\"current_month\", 1)\ncontext.set(\"current_year\", 2000)\ncontext.set(\"current_day_temp\", 0)\ncontext.set(\"max_temp\", 0)\ncontext.set(\"min_temp\", 100)",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 120,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "a50a60e99a23eba2",
+        "type": "json",
+        "z": "1f3f21208f8f83e8",
+        "name": "temp",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 1210,
+        "y": 240,
+        "wires": [
+            [
+                "6f1f12ee4152716f"
+            ]
+        ]
+    },
+    {
+        "id": "6f1f12ee4152716f",
+        "type": "file",
+        "z": "1f3f21208f8f83e8",
+        "name": "",
+        "filename": "/Users/brunomorelli/Desktop/NDS/NodeRed/log.json",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 1360,
+        "y": 100,
+        "wires": [
+            [
+                "0385e6d4f6554102"
+            ]
+        ]
+    },
+    {
+        "id": "78288e55b7bd3cfa",
+        "type": "function",
+        "z": "1f3f21208f8f83e8",
+        "name": "function 12",
+        "func": "if(context.get(\"day\")==31){\n    context.set(\"day\", 1);\n    if(context.get(\"month\")==12){\n        context.set(\"month\", 1);\n        context.set(\"year\", context.get(\"year\")+1);\n    }else{\n        context.set(\"month\", context.get(\"month\")+1); \n    }\n   \n}\nelse if(context.get(\"ts\")==10){\n    //should be 8640 not 10\n    context.set(\"day\", context.get(\"day\")+1); \n    context.set(\"ts\", 0);\n}\ncontext.set(\"ts\", context.get(\"ts\")+1);\n\nlet new_msg = {\n    topic: \"temp\",\n    payload : {\n        year : context.get(\"year\"),\n        month : context.get(\"month\"),\n        day : context.get(\"day\"),\n        //temp : msg.payload.tempc\n        temp: context.get(\"day\")\n    }\n}\nreturn new_msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set(\"ts\", 0)\ncontext.set(\"day\", 1)\ncontext.set(\"month\", 1)\ncontext.set(\"year\", 2000)\n",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 240,
+        "wires": [
+            [
+                "16c446f0fdda25e0"
+            ]
+        ]
+    },
+    {
+        "id": "0385e6d4f6554102",
+        "type": "e-mail",
+        "z": "1f3f21208f8f83e8",
+        "server": "eas.outlook.com",
+        "port": "587",
+        "secure": true,
+        "tls": false,
+        "name": "bruno.morelli@mail.polimi.it",
+        "dname": "Send Mail!",
+        "x": 1710,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "620b955b9fa742b1",
+        "type": "mqtt in",
+        "z": "1f3f21208f8f83e8",
+        "name": "",
+        "topic": "/smartcity/milan",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "5b3ddf093fdf1ef4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3a0352fe6ef6cd24",
+        "type": "json",
+        "z": "1f3f21208f8f83e8",
+        "name": "temp",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 550,
+        "y": 380,
+        "wires": [
+            [
+                "e8ee49bd46162da0"
+            ]
+        ]
+    },
+    {
+        "id": "e8ee49bd46162da0",
+        "type": "file",
+        "z": "1f3f21208f8f83e8",
+        "name": "",
+        "filename": "/Users/brunomorelli/Desktop/NDS/NodeRed/temp.json",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 770,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9f01af274d0fa63d",
+        "type": "file in",
+        "z": "1f3f21208f8f83e8",
+        "name": "",
+        "filename": "/Users/brunomorelli/Desktop/NDS/NodeRed/temp.json",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "utf8",
+        "allProps": false,
+        "x": 950,
+        "y": 380,
+        "wires": [
+            [
+                "4308749b1e959f2d"
+            ]
+        ]
+    },
+    {
+        "id": "6629bde23b174064",
+        "type": "delay",
+        "z": "1f3f21208f8f83e8",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 900,
+        "y": 140,
+        "wires": [
+            [
+                "9f01af274d0fa63d"
+            ]
+        ]
+    },
+    {
+        "id": "bb037593702d7aed",
+        "type": "function",
+        "z": "1f3f21208f8f83e8",
+        "name": "function 15",
+        "func": "if(msg!=null) return msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
+        "y": 320,
+        "wires": [
+            [
+                "3a0352fe6ef6cd24"
+            ]
+        ]
+    },
+    {
+        "id": "16c446f0fdda25e0",
+        "type": "function",
+        "z": "1f3f21208f8f83e8",
+        "name": "function 16",
+        "func": "let change_msg = null;\nlet new_msg = null;\nif(msg.topic!='temp' && context.get(\"current_year\")==null){\n    context.set(\"current_day\", msg.payload.current_day);\n    context.set(\"current_month\", msg.payload.current_month);\n    context.set(\"current_year\", msg.payload.current_year);\n    context.set(\"current_day_temp\", msg.payload.current_day_temp)\n    context.set(\"max_temp\", msg.payload.max_temp);\n    context.set(\"min_temp\", msg.payload.min_temp);\n}\nelse if(msg.topic=='temp' && context.get(\"current_year\")!=null){\n    if (msg.payload.day == context.get(\"current_day\")) context.set(\"current_day_temp\", context.get(\"current_day_temp\") + msg.payload.temp);\n    if (msg.payload.day != context.get(\"current_day\")) {\n    var avg = context.get(\"current_day_temp\") / 10;\n    //should be 8640 not 10\n    if (avg > context.get(\"max_temp\") || avg < context.get(\"min_temp\")) {\n        if (avg > context.get(\"max_temp\")) context.set(\"max_temp\", avg);\n        if (avg < context.get(\"min_temp\")) context.set(\"min_temp\", avg);\n        change_msg = {\n            topic: msg.topic,\n            payload: {\n                current_month: context.get(\"current_month\"),\n                current_year: context.get(\"current_year\"),\n                max_temp: context.get(\"max_temp\"),\n                min_temp: context.get(\"min_temp\")\n\n            }\n        }\n\n    }\n\n    context.set(\"current_day_temp\", msg.payload.temp);\n    context.set(\"current_day\", msg.payload.day);\n    }\n    if (msg.payload.month != context.get(\"current_month\")) {\n    new_msg = {\n        topic: msg.topic,\n        payload: 1\n    }\n\n    context.set(\"current_day\", msg.payload.day);\n    context.set(\"current_month\", msg.payload.month);\n    context.set(\"current_year\", msg.payload.year);\n    context.set(\"max_temp\", 0);\n    context.set(\"min_temp\", 100);\n\n    }\n\n    return [new_msg, change_msg];\n}\n\n",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set(\"current_day\", null)\ncontext.set(\"current_month\", null)\ncontext.set(\"current_year\", null)\ncontext.set(\"current_day_temp\", null)\ncontext.set(\"max_temp\", null)\ncontext.set(\"min_temp\", null)",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 160,
+        "wires": [
+            [
+                "dea0025bb406aade"
+            ],
+            [
+                "bb037593702d7aed"
+            ]
+        ]
+    },
+    {
+        "id": "4667786728ca2f02",
+        "type": "function",
+        "z": "1f3f21208f8f83e8",
+        "name": "function 17",
+        "func": "msg.payload = \"max temp for \" + msg.payload.current_month + \"/\" + msg.payload.current_year + \"is\" + msg.payload.max_temp + \"C, the min is \" + msg.payload.min_temp + \"C.\"\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1150,
+        "y": 300,
+        "wires": [
+            [
+                "a50a60e99a23eba2"
+            ]
+        ]
+    },
+    {
+        "id": "4308749b1e959f2d",
+        "type": "json",
+        "z": "1f3f21208f8f83e8",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 1130,
+        "y": 340,
+        "wires": [
+            [
+                "4667786728ca2f02"
+            ]
+        ]
+    },
+    {
+        "id": "fee5ddde24fb43c7",
+        "type": "inject",
+        "z": "1f3f21208f8f83e8",
+        "name": "prestart",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 680,
+        "wires": [
+            [
+                "89e01c16c194e7bc"
+            ]
+        ]
+    },
+    {
+        "id": "89e01c16c194e7bc",
+        "type": "function",
+        "z": "1f3f21208f8f83e8",
+        "name": "function 18",
+        "func": "msg = {\n    payload: {\n    current_day: 1,\n    current_month: 1,\n    current_year: 2000,\n    current_day_temp: 1,\n    max_temp: 0,\n    min_temp: 100    \n    }\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 680,
+        "wires": [
+            [
+                "68e14be4a9337433"
+            ]
+        ]
+    },
+    {
+        "id": "6c4ec11399bb8215",
+        "type": "file",
+        "z": "1f3f21208f8f83e8",
+        "name": "",
+        "filename": "/Users/brunomorelli/Desktop/NDS/NodeRed/temp.json",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 790,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "68e14be4a9337433",
+        "type": "json",
+        "z": "1f3f21208f8f83e8",
+        "name": "temp",
+        "property": "payload",
+        "action": "str",
+        "pretty": true,
+        "x": 470,
+        "y": 680,
+        "wires": [
+            [
+                "6c4ec11399bb8215"
+            ]
+        ]
+    },
+    {
+        "id": "77233b387b9870bd",
+        "type": "file in",
+        "z": "1f3f21208f8f83e8",
+        "name": "",
+        "filename": "/Users/brunomorelli/Desktop/NDS/NodeRed/temp.json",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "utf8",
+        "allProps": false,
+        "x": 290,
+        "y": 40,
+        "wires": [
+            [
+                "8a232160641c3d8a"
+            ]
+        ]
+    },
+    {
+        "id": "8a232160641c3d8a",
+        "type": "json",
+        "z": "1f3f21208f8f83e8",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 350,
+        "y": 160,
+        "wires": [
+            [
+                "16c446f0fdda25e0"
+            ]
+        ]
+    },
+    {
+        "id": "dea0025bb406aade",
+        "type": "function",
+        "z": "1f3f21208f8f83e8",
+        "name": "function 19",
+        "func": "if(msg!=null) return msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 730,
+        "y": 140,
+        "wires": [
+            [
+                "6629bde23b174064"
+            ]
+        ]
+    }
+]
