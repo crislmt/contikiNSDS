@@ -203,13 +203,20 @@ void dequeue() {
     if(front==MAX_QUEUE_SIZE){
       front=0;
     }
-    itemCount--;
+  itemCount--;
 }
 
 double calculateQueueAverage() {
-    int sum = 0;
-    for (int i = front; i < rear; i++) {
+    int sum=0;
+    if(isFull){
+      for(int i=0; i<MAX_QUEUE_SIZE; i++){
+        sum+=q[i];
+      }
+    }
+    else{
+      for (int i = front; i < rear; i++) {
         sum += q[i];
+      }
     }
     return (double)sum / itemCount;
 }
