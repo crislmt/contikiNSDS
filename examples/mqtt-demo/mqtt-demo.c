@@ -184,6 +184,10 @@ static int itemCount;
 
 /*Function that inserts elements in the array q as if it was a queue*/
 
+int isFull(){
+  return itemCount == MAX_QUEUE_SIZE;
+}
+
 void enqueue(int value) {
    if(!isFull()){
     if(rear==MAX_QUEUE_SIZE-1){
@@ -208,11 +212,6 @@ double calculateQueueAverage() {
     }
     return (double)sum / MAX_QUEUE_SIZE;
 }
-
-int isFull(){
-  return itemCount == MAX_QUEUE_SIZE;
-}
-
 
 void initialize() {
     front = 0;
