@@ -207,7 +207,7 @@ void dequeue() {
 
 double calculateQueueAverage() {
     int sum = 0;
-    for (int i = 0; i < itemCount; i++) {
+    for (int i = front; i <= rear; i++) {
         sum += q[i];
     }
     return (double)sum / itemCount;
