@@ -174,7 +174,7 @@ static mqtt_client_config_t conf;
 /*---------------------------------------------------------------------------*/
 PROCESS(mqtt_demo_process, "MQTT Demo");
 /*-----------------------------------QUEUE-----------------------------------*/
-static q[MAX_QUEUE_SIZE];
+static int q[MAX_QUEUE_SIZE];
 static int front;
 static int rear;
 static int size;
@@ -217,7 +217,7 @@ int dequeue() {
 
 double calculateQueueAverage() {
     int sum = 0;
-    for (int i = 0; i < q->size; i++) {
+    for (int i = 0; i < size; i++) {
         sum += q[front + i];
     }
     return (double)sum / size;
