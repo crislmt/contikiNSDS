@@ -19,7 +19,7 @@ counter = 0
 
 while True:
 
-    if(counter==9):
+    if(counter==2):
         day=(day+1)%31
         print("day is: ", day)
         if(day==30):
@@ -34,7 +34,7 @@ while True:
 
     payload = {
         "temp": temp,
-        "humidity": humidity,
+        "hum": humidity,
         "year": year+1,
         "month": month+1,
         "day": day+1
