@@ -60,7 +60,6 @@
 #define TEMP_THRESHOLD 15
 #define HUM_THRESHOLD 50
 #define MAX_QUEUE_SIZE 6
-#define MQTT_PUBLISH_TOPIC="iot/contiki"
 
 /*---------------------------------------------------------------------------*/
 /*
@@ -195,7 +194,7 @@ void enqueue(int value, buffer* buff) {
     if(buff->rear==MAX_QUEUE_SIZE-1){
       buff->rear=-1;
     }
-    q[++buff->rear]=value;
+    buff->q[++buff->rear]=value;
     buff->itemCount++;
    }
 }
