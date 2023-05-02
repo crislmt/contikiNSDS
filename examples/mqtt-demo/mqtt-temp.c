@@ -52,15 +52,15 @@
 #define LOG_MODULE "MQTT-DEMO"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
-/*
-* Min and max value for temperature and humidity
-*/
+/*---------------------------------------------------------------------------*/
 #define MIN_TEMP 0
 #define MAX_TEMP 40
 #define MIN_HUM 0
 #define MAX_HUM 100
-#define THRESHOLD 15
+#define TEMP_THRESHOLD 15
+#define HUM_THRESHOLD 50
 #define MAX_QUEUE_SIZE 6
+#define MQTT_PUBLISH_TOPIC="iot/contiki"
 
 /*---------------------------------------------------------------------------*/
 /*
@@ -175,56 +175,53 @@ static mqtt_client_config_t conf;
 PROCESS(mqtt_demo_process, "MQTT Demo");
 /*-----------------------------------QUEUE-----------------------------------*/
 
-static int q[MAX_QUEUE_SIZE];
-static int front;
-static int rear;
-static int initialized=0;
-static int itemCount=0;
+typedef struct{
+  int q[MAX_QUEUE_SIZE];
+  int front;
+  int rear;
+  int itemCount;
+} buffer;
 
-/*Function that inserts elements in the array q as if it was a queue*/
+static int initialized;
+static buffer temp_buffer;
+static buffer hum_buffer;
 
-int isFull(){
-  return itemCount == MAX_QUEUE_SIZE;
+int isFull(buffer* buffer){
+  return buffer->itemCount == MAX_QUEUE_SIZE;
 }
 
-void enqueue(int value) {
-   if(!isFull()){
-    if(rear==MAX_QUEUE_SIZE-1){
-      rear=-1;
+void enqueue(int value, buffer* buff) {
+   if(!isFull(buff)){
+    if(buff->rear==MAX_QUEUE_SIZE-1){
+      buff->rear=-1;
     }
-    q[++rear]=value;
-    itemCount++;
+    q[++buff->rear]=value;
+    buff->itemCount++;
    }
 }
 
-void dequeue() {
-  if(itemCount < MAX_QUEUE_SIZE) return;
-  front++;
-    if(front==MAX_QUEUE_SIZE){
-      front=0;
+void dequeue(buffer* buff) {
+  if(buff->itemCount < MAX_QUEUE_SIZE) return;
+  buff->front++;
+    if(buff->front==MAX_QUEUE_SIZE){
+      buff->front=0;
     }
-  itemCount--;
+  buff->itemCount--;
 }
 
-double calculateQueueAverage() {
+double calculateQueueAverage(buffer* buff) {
     int sum=0;
-    if(isFull()){
+    if(isFull(buff)){
       for(int i=0; i<MAX_QUEUE_SIZE; i++){
-        sum+=q[i];
+        sum+=buff->q[i];
       }
     }
     else{
-      for (int i = front; i <= rear; i++) {
-        sum += q[i];
+      for (int i = buff->front; i <= buff->rear; i++) {
+        sum += buff->q[i];
       }
     }
-    return (double)sum / itemCount;
-}
-
-void initialize() {
-    front = 0;
-    rear = -1;
-    initialized=1;
+    return (double)sum / buff->itemCount;
 }
 
 /*--------------------------------------------------------------------------------*/
@@ -464,9 +461,10 @@ publish(void)
   srand(time(NULL));
   int temp=(int) rand()%(MAX_TEMP-MIN_TEMP+1)+MIN_TEMP;
   int humidity=(int) rand()%(MAX_HUM-MIN_HUM+1)+MIN_HUM;
-  enqueue(temp);
-  dequeue();
-  if(temp<THRESHOLD) temp=calculateQueueAverage();
+  dequeue(&temp_buffer); dequeue(&hum_buffer);
+  enqueue(&temp_buffer, temp); dequeue(&hum_buffer, humidity);
+  if(temp<TEMP_THRESHOLD) temp=calculateQueueAverage(&temp_buffer);
+  if(humidity<HUM_THRESHOLD) temp=calculateQueueAverage(&temp_buffer);
 
   len = snprintf(buf_ptr, remaining,
                  "{"
@@ -477,7 +475,7 @@ publish(void)
                  "\"Uptime (sec)\":%lu,"
                  "\"temp\":%d,"
                  "\"hum\":%d",
-                 "TEMPERATURE", year, day, month, clock_seconds(),temp, humidity); 
+                 "native", year, day, month, clock_seconds(),temp, humidity); 
 
   if(len < 0 || len >= remaining) {
     LOG_ERR("Buffer too short. Have %d, need %d + \\0\n", remaining, len);
@@ -649,9 +647,6 @@ state_machine(void)
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(mqtt_demo_process, ev, data)
 {
-  if(initialized==0){
-    initialize();
-  }
 
   PROCESS_BEGIN();
 
