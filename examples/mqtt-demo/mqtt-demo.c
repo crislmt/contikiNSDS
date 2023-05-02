@@ -59,7 +59,7 @@
 #define MAX_TEMP 40
 #define MIN_HUM 0
 #define MAX_HUM 100
-#define THRESHOLD 25
+#define THRESHOLD 15
 #define MAX_QUEUE_SIZE 6
 
 /*---------------------------------------------------------------------------*/
@@ -207,10 +207,10 @@ void dequeue() {
 
 double calculateQueueAverage() {
     int sum = 0;
-    for (int i = 0; i < MAX_QUEUE_SIZE; i++) {
+    for (int i = 0; i < itemCount; i++) {
         sum += q[i];
     }
-    return (double)sum / MAX_QUEUE_SIZE;
+    return (double)sum / itemCount;
 }
 
 void initialize() {
@@ -218,9 +218,6 @@ void initialize() {
     rear = -1;
     size = 0;
     initialized=1;
-    for(int i=0; i<MAX_QUEUE_SIZE; i++){
-      enqueue(1);
-    }
 }
 
 /*--------------------------------------------------------------------------------*/
