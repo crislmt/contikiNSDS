@@ -180,7 +180,7 @@ static int rear;
 static int size;
 static int initialized=0;
 
-void createQueue() {
+void initialize() {
     front = -1;
     rear = -1;
     size = 0;
