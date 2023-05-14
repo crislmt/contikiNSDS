@@ -635,6 +635,7 @@ state_machine(void)
   /* If we didn't return so far, reschedule ourselves */
   etimer_set(&publish_periodic_timer, STATE_MACHINE_PERIODIC);
 }
+}
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(mqtt_demo_process, ev, data)
 {
