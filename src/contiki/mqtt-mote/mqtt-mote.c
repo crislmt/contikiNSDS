@@ -165,6 +165,7 @@ static char app_buffer[APP_BUFFER_SIZE];
 /*---------------------------------------------------------------------------*/
 static struct mqtt_message *msg_ptr = 0;
 static struct etimer publish_periodic_timer;
+static struct ctimer ct;
 static char *buf_ptr;
 static uint16_t seq_nr_value = 0;
 /*---------------------------------------------------------------------------*/
@@ -248,6 +249,11 @@ ipaddr_sprintf(char *buf, uint8_t buf_len, const uip_ipaddr_t *addr)
   return len;
 }
 /*---------------------------------------------------------------------------*/
+static void
+publish_led_off(void *d)
+{
+  leds_off(MQTT_DEMO_STATUS_LED);
+}
 /*---------------------------------------------------------------------------*/
 static void
 pub_handler(const char *topic, uint16_t topic_len, const uint8_t *chunk,
@@ -506,7 +512,7 @@ publish(void)
   }
 
   mqtt_publish(&conn, NULL, pub_topic, (uint8_t *)app_buffer,
-               strlen(app_buffer), MQTT_QOS_LEVEL_0, MQTT_RETAIN_OFF);
+               strlen(app_buffer), MQTT_QOS_LEVEL_1, MQTT_RETAIN_OFF);
 
   LOG_INFO("Publish sent out!\n");
 }
@@ -545,10 +551,16 @@ state_machine(void)
       /* Registered and with a global IPv6 address, connect! */
       LOG_INFO("Joined network! Connect attempt %u\n", connect_attempt);
       connect_to_broker();
+    } else {
+      leds_on(MQTT_DEMO_STATUS_LED);
+      ctimer_set(&ct, NO_NET_LED_DURATION, publish_led_off, NULL);
+    }
     etimer_set(&publish_periodic_timer, NET_CONNECT_PERIODIC);
     return;
     break;
   case STATE_CONNECTING:
+    leds_on(MQTT_DEMO_STATUS_LED);
+    ctimer_set(&ct, CONNECTING_LED_DURATION, publish_led_off, NULL);
     /* Not connected yet. Wait */
     LOG_INFO("Connecting: retry %u...\n", connect_attempt);
     break;
@@ -569,6 +581,8 @@ state_machine(void)
         subscribe();
         state = STATE_PUBLISHING;
       } else {
+        leds_on(MQTT_DEMO_STATUS_LED);
+        ctimer_set(&ct, PUBLISH_LED_ON_DURATION, publish_led_off, NULL);
         publish();
       }
       etimer_set(&publish_periodic_timer, conf.pub_interval);
@@ -634,7 +648,6 @@ state_machine(void)
   /* If we didn't return so far, reschedule ourselves */
   etimer_set(&publish_periodic_timer, STATE_MACHINE_PERIODIC);
 }
-}
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(mqtt_demo_process, ev, data)
 {
@@ -647,7 +660,7 @@ PROCESS_THREAD(mqtt_demo_process, ev, data)
   init_config();
   update_config();
 
-
+  /* Main loop */
   while(1) {
 
     PROCESS_YIELD();
