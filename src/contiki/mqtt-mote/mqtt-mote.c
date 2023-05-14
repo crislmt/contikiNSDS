@@ -512,7 +512,7 @@ publish(void)
   }
 
   mqtt_publish(&conn, NULL, pub_topic, (uint8_t *)app_buffer,
-               strlen(app_buffer), MQTT_QOS_LEVEL_1, MQTT_RETAIN_OFF);
+               strlen(app_buffer), MQTT_QOS_LEVEL_0, MQTT_RETAIN_OFF);
 
   LOG_INFO("Publish sent out!\n");
 }
