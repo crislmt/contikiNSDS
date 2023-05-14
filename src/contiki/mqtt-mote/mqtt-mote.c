@@ -250,12 +250,6 @@ ipaddr_sprintf(char *buf, uint8_t buf_len, const uip_ipaddr_t *addr)
 }
 /*---------------------------------------------------------------------------*/
 static void
-publish_led_off(void *d)
-{
-  leds_off(MQTT_DEMO_STATUS_LED);
-}
-/*---------------------------------------------------------------------------*/
-static void
 pub_handler(const char *topic, uint16_t topic_len, const uint8_t *chunk,
             uint16_t chunk_len)
 {
